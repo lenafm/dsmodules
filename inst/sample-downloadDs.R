@@ -5,6 +5,7 @@ library(shinypanels)
 library(dspins)
 library(homodatum)
 library(hgchmagic)
+library(reactable)
 
 user_name <- "brandon"
 org_name <- "test"
@@ -21,6 +22,9 @@ ui <- panelsPage(panel(title = "Examples",
                                   br(),
                                   h5("Rendered from server, subset of modalBodyInputs and default modalFunction"),
                                   uiOutput("download_server"),
+                                  br(),
+                                  h5("Save reactable"),
+                                  uiOutput("downloadUI_reactable"),
                                   br(),
                                   h5("Rendered from UI, customised modalBody, customised modalFunction"),
                                   downloadDsUI("download_ui",
@@ -46,6 +50,10 @@ server <- function(input, output, session) {
   element_dsviz <- reactive({
     hgchmagic::hgch_bar_Cat(data.frame(a = c("b", "c")))
   })
+
+  element_reactable <- reactive({
+    reactable::reactable(data.frame(a = 1:3, b = input$select))
+    })
 
   # function to be passed to modalFunction (alternative to using default modalFunction)
   dspin_urls_ <- function(x, user_name, ...) {
@@ -80,6 +88,16 @@ server <- function(input, output, session) {
 
   })
 
+  # rendered from server with default modalBodyInputs: modalBodyInputs = c("name", "description", "sources", "license", "tags", "category")
+  output$downloadUI_reactable <- renderUI({
+    downloadDsUI("download_reactable",
+                 display = "dropdown",
+                 modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
+                 dropdownLabel = "Download",
+                 formats = c("html"))
+
+  })
+
 
   observe({
     req(element_fringe())
@@ -96,6 +114,16 @@ server <- function(input, output, session) {
     downloadDsServer(id = "download_save_pins",
                      element = reactive(element_dsviz()),
                      formats = c("html", "jpeg", "pdf", "png"),
+                     elementType = "dsviz",
+                     user_name = user_name,
+                     org_name = org_name)
+  })
+
+  observe({
+    req(element_reactable())
+    downloadDsServer(id = "download_reactable",
+                     element = reactive(element_reactable()),
+                     formats = c("html"),
                      elementType = "dsviz",
                      user_name = user_name,
                      org_name = org_name)
