@@ -39,8 +39,13 @@ modalFunction_saveFile <- function(...) {
   element <- args_orig$element
   user_name <- args_orig$user_name
   org_name <- args_orig$org_name
-
+  bucket_id <- args_orig$bucket_id
   elementType <- args_orig$elementType
+
+  if(is.null(element)) stop("Need element to save.")
+  if(is.null(elementType)) stop("Need elementType to save file.")
+  if(is.null(user_name) & is.null(org_name)) stop("Need user_name or org_name to save file.")
+  if(is.null(bucket_id)) bucket_id <- "user"
 
   if(!elementType %in% c("dsviz", "fringe", "drop")) stop("Element must be of type 'fringe', 'dsviz', or 'drop'.")
 
@@ -78,9 +83,15 @@ modalFunction_saveFile <- function(...) {
                          tags = tags,
                          category = args$category)
 
-  # run dsviz(), fringe(), or drop()
-  el <- do.call(elementType, element_params)
+  # add namespace to dsviz(), fringe(), or drop() function
+  element_function_ns <- "dspins::"
+  if(elementType == "fringe") element_function_ns <- "homodatum::"
+
+  element_function <- paste0(element_function_ns, elementType)
+
+  # run dsviz(), fringe(), or drop() with namespace
+  el <- do.call(getfun(element_function), element_params)
 
   # save pin (if org_name is not NULL, saved in org_name, otherwise in user_name)
-  pins <- dspin_urls(element = el, user_name = user_name, org_name = org_name)
+  pins <- dspin_urls(element = el, user_name = user_name, org_name = org_name, bucket_id = bucket_id)
 }
