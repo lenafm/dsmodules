@@ -32,16 +32,16 @@ Imports:
     knitr,
     rio,
     webshot,
-    dspins,
     shinyinvoer,
-    homodatum
-Remotes: 
-    datasketch/dspins,
-    datasketch/shinyinvoer,
-    datasketch/homodatum
+    homodatum (>= 0.1.0),
+    dspins (>= 0.1.0)
 Suggests:
     rlang,
     testthat (>= 2.1.0)
+Remotes:  
+    datasketch/shinyinvoer,
+    datasketch/homodatum,
+    datasketch/dspins
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
