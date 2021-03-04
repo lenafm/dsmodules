@@ -114,7 +114,7 @@ server <- function(input, output, session) {
     downloadDsServer(id = "download_save_pins",
                      element = reactive(element_dsviz()),
                      formats = c("html", "jpeg", "pdf", "png"),
-                     elementType = "dsviz",
+                     type = "dsviz",
                      user_name = user_name,
                      org_name = org_name)
   })
@@ -124,7 +124,7 @@ server <- function(input, output, session) {
     downloadDsServer(id = "download_reactable",
                      element = reactive(element_reactable()),
                      formats = c("html"),
-                     elementType = "dsviz",
+                     type = "dsviz",
                      user_name = user_name,
                      org_name = org_name)
   })
@@ -135,7 +135,7 @@ server <- function(input, output, session) {
     downloadDsServer(id = "download_0",
                      element = reactive(element_dsviz()),
                      formats = c("html", "jpeg", "pdf", "png"),
-                     elementType = "dsviz",
+                     type = "dsviz",
                      user_name = user_name)
   })
 
