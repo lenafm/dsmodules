@@ -132,11 +132,11 @@ downloadDsUI <- function(id, text = "Download",
 downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = NULL, ...) {
 
   args <- list(...)
-  element <- args$element
-  if(is.null(element)) stop("Need an 'element' to save.")
 
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+
+    r <- reactiveValues(urls = NULL)
 
     # use default modalFunction to save file with dspin_urls if no modalFunction is specified
     if(is.null(modalFunction)){
@@ -145,8 +145,9 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
 
     urls <- formServer("modal_form", errorMessage = errorMessage, FUN = modalFunction, ...)
 
-    # update name field when name was not entered
-    observe({
+    observeEvent(urls(),{
+      r$urls <- urls()
+
       name_field <- "modal_form-name"
       if(is.null(input$`modal_form-name`)){
         name_field <- paste0("modal_form-",id,"-name")
@@ -155,23 +156,22 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
       input_name <- input[[name_field]]
 
       if(!is.null(input_name)){
-        if(!nzchar(input_name) & !is.null(urls())){
-          namePlaceholder <- sub('.*\\/', '', urls()$link)
+        if(!nzchar(input_name) & !is.null(r$urls)){
+          namePlaceholder <- sub('.*\\/', '', r$urls$link)
           updateTextInput(session, name_field,
                           value = namePlaceholder)
         }
       }
+
     })
 
-    # populate link, permalink and iframe fields after saving
-      output$link <- renderUI({"link"
-        if(!is.null(urls())) urls()$link})
+    if(!is.null(r$urls)){
+      output$link <- renderUI({r$urls$link})
 
-      output$permalink <- renderUI({"permalink"
-        if(!is.null(urls())) urls()$permalink})
+      output$permalink <- renderUI({r$urls$permalink})
 
-      output$iframe <- renderUI({"iframe"
-        if(!is.null(urls())) urls()$iframe_embed})
+      output$iframe <- renderUI({r$urls$iframe_embed})
+    }
 
     element <- eval_reactives(element)
     dwn_mdl <- from_formats_to_module(formats)

@@ -37,23 +37,20 @@ modalFunction_saveFile <- function(...) {
 
   args_orig <- list(...)
   element <- args_orig$element
+  type <- args_orig$type
   user_name <- args_orig$user_name
   org_name <- args_orig$org_name
   bucket_id <- args_orig$bucket_id
-  elementType <- args_orig$elementType
 
   if(is.null(element)) stop("Need element to save.")
-  if(is.null(elementType)) stop("Need elementType to save file.")
+  if(is.null(type)) stop("Need type to save file.")
   if(is.null(user_name) & is.null(org_name)) stop("Need user_name or org_name to save file.")
   if(is.null(bucket_id)) bucket_id <- "user"
 
-  if(!elementType %in% c("dsviz", "fringe", "drop")) stop("Element must be of type 'fringe', 'dsviz', or 'drop'.")
+  if(!type %in% c("dsviz", "fringe", "drop")) stop("Element must be of type 'fringe', 'dsviz', or 'drop'.")
 
   element <- dsmodules:::eval_reactives(element)
   user_name <- dsmodules:::eval_reactives(user_name)
-
-  # extract string of updateTextInput field that needs to be updated if name is empty
-  name_field <- names(args_orig)[grepl('name$',names(args_orig))]
 
   # remove empty string arguments
   args <- args_orig[args_orig != ""]
